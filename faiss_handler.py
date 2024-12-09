@@ -5,10 +5,11 @@ from langchain_community.vectorstores import FAISS
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
+import pickle
 load_dotenv()
 
 gemini_api_key = os.environ.get("GEMINI_API_KEY")
-def store_data_in_faiss(pdf_path):
+def store_data_in_faiss(pdf_path,index_file):
     # Load and split the PDF document
     loader = PyPDFLoader(pdf_path)
     docs = loader.load()
@@ -19,12 +20,21 @@ def store_data_in_faiss(pdf_path):
     # Create embeddings and store them in FAISS
     embeddings = HuggingFaceEmbeddings()
     db = FAISS.from_documents(documents[:30], embeddings)
-    
+    with open(index_file, 'wb') as f:
+        pickle.dump(db, f)
     return db
 
 
-def answer_query(db, query):
+def answer_query(query,index_file,pdf_path):
     try:
+        try:
+            with open(index_file, 'rb') as f:
+                db = pickle.load(f)
+                print("FAISS vector store loaded from .pkl file.")
+        except Exception as e:
+            print(f"Error loading FAISS index: {e}")
+            db = store_data_in_faiss(pdf_path,index_file)
+            print("FAISS vector store loaded from .pkl file.")
         # Perform a similarity search
         result = db.similarity_search(query)
         context = result[0].page_content
