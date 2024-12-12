@@ -33,8 +33,3 @@ pip install -r requirements.txt
 }
 ```
 
-## Key Features
-- Context-based event information
-- AI-powered query responses
-- Handles event-specific questions
-- Graceful handling of irrelevant queries
