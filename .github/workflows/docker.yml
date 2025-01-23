@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: docker.io  # Default to Docker Hub (or use another registry like GHCR)
-  IMAGE_NAME: bungeegon/kriya-bot  # Replace with your image name
+  IMAGE_NAME:  ${{ secrets.DOCKERHUB_USERNAME }}/kriya-bot  # Replace with your image name
 
 jobs:
   build-and-push:
@@ -32,4 +32,4 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}  # Tag with Git commit SHA
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}  
