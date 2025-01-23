@@ -5,7 +5,7 @@ on:
     branches: ["main", "master"]  # Trigger on push to main/master branch
 
 env:
-  REGISTRY: docker.io  # Default to Docker Hub (or use another registry like GHCR)
+  REGISTRY: docker.io/  # Default to Docker Hub (or use another registry like GHCR)
   IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/kriya-bot  # Replace with your image name
 
 jobs:
@@ -31,5 +31,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}  # Tag with Git commit SHA
+            ${{ env.REGISTRY }}${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}${{ env.IMAGE_NAME }}:${{ github.sha }}  # Tag with Git commit SHA
