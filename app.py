@@ -1,6 +1,10 @@
 from flask import Flask, request, jsonify 
-from faiss_handler import store_data_in_faiss, answer_query 
+
 from dotenv import load_dotenv 
+from server import  answer_query, store_data_in_faiss
+
+
+
 
 load_dotenv() 
 pdf_path = "events.pdf"
@@ -8,6 +12,7 @@ index_file = "vector_db.pkl"
 
 
 app = Flask(__name__) 
+
  
 @app.route('/query', methods=['POST']) 
 def query(): 
