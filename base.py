@@ -11,7 +11,7 @@ pdf_path = "events.pdf"
 index_file = "vector_db.pkl"
 
 # Initialize Flask app and CORS
-app = Flask(__name__)
+app = Flask(__name__)  # Corrected _name_ to __name__
 CORS(app)
 
 # Store user sessions in memory (chat history per session)
@@ -61,5 +61,5 @@ def store():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # Corrected the condition to __name__
     app.run(debug=True)
