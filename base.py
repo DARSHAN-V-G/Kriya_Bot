@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
-from dotenv import load_dotenv
-from server import answer_query, store_data_in_faiss
 from flask_cors import CORS
 import uuid
+from dotenv import load_dotenv
+from server import answer_query, store_data_in_faiss
 
 load_dotenv()
 
@@ -11,8 +11,8 @@ pdf_path = "events.pdf"
 index_file = "vector_db.pkl"
 
 # Initialize Flask app and CORS
-app = Flask(__name__)  # Corrected _name_ to __name__
-CORS(app)
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Change "*" to your frontend domain for security
 
 # Store user sessions in memory (chat history per session)
 chat_sessions = {}
@@ -61,5 +61,5 @@ def store():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':  # Corrected the condition to __name__
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')  # Ensure the app listens on all interfaces

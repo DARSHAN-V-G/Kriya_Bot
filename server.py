@@ -108,6 +108,7 @@ def answer_query(query, index_file, pdf_path, session_id):
    - 📍 for locations
    - 🗣️ for speakers or participants
     - 📝 for event-related information
+   
 
         Respond in a straightforward manner, using simple language that anyone can understand.
 
