@@ -62,6 +62,34 @@
             text-align: center;
             color: #888;
         }
+        .markdown-rendered h1, .markdown-rendered h2, .markdown-rendered h3 {
+            margin: 10px 0;
+        }
+        .markdown-rendered p {
+            margin: 5px 0;
+        }
+        .markdown-rendered ul, .markdown-rendered ol {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        .markdown-rendered strong {
+            font-weight: bold;
+        }
+        .markdown-rendered em {
+            font-style: italic;
+        }
+        .markdown-rendered code {
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .markdown-rendered pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -91,7 +119,7 @@
             document.getElementById('loading').style.display = 'block'; // Show loading indicator
 
             // Send the query to the backend
-            fetch('https://kriya-bot.onrender.com/query', {
+            fetch('https://xl0rbvsb-5000.inc1.devtunnels.ms/query', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -124,11 +152,33 @@
             let messageDiv = document.createElement('div');
             messageDiv.classList.add('message');
             messageDiv.classList.add(sender === 'user' ? 'user-message' : 'assistant-message');
-            messageDiv.textContent = message;
+
+            // Render Markdown if the sender is the assistant
+            if (sender === 'assistant') {
+                messageDiv.classList.add('markdown-rendered');
+                messageDiv.innerHTML = renderMarkdown(message); // Convert Markdown to HTML
+            } else {
+                messageDiv.textContent = message; // Plain text for user messages
+            }
+
             document.getElementById('messages').appendChild(messageDiv);
             document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight; // Scroll to the bottom
         }
 
+        // Function to render Markdown as HTML
+        function renderMarkdown(markdown) {
+            // Simple Markdown parsing (you can use a library like `marked.js` for full support)
+            return markdown
+            .replace(/^#### (.*$)/gim, '<h4>$1</h4>') // Headers (###)
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>') // Headers (###)
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')  // Headers (##)
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')   // Headers (#)
+                .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>') // Bold (**)
+                .replace(/\*(.*)\*/gim, '<em>$1</em>') // Italics (*)
+                .replace(/`(.*?)`/gim, '<code>$1</code>') // Inline code (`)
+                .replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>') // Code blocks (```)
+                .replace(/\n/g, '<br>'); // New lines
+        }
     </script>
 
 </body>

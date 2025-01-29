@@ -52,7 +52,7 @@ def store_data_in_faiss(pdf_path, index_file):
     loader = PyPDFLoader(pdf_path)
     docs = loader.load()
 
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=20)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=20)
     documents = text_splitter.split_documents(docs)
 
     # Create embeddings and store them in FAISS
@@ -93,7 +93,7 @@ def answer_query(query, index_file, pdf_path, session_id):
         You are an AI assistant specialized in providing precise information about events. Follow these guidelines strictly:
 
         1. Use ONLY the given context to answer the question.
-        2. If the query is unrelated to the context, respond with: "I apologize, but I can only provide information based on the events in my context."
+        2. If the query is unrelated to the context, respond with only : "I apologize, but I can only provide information based on the events in my context." and nothing else regardless
         3. Provide clear, concise, and easy-to-understand answers.
         4. Focus on extracting relevant event details such as:
         - Event name
@@ -108,6 +108,8 @@ def answer_query(query, index_file, pdf_path, session_id):
    - 📍 for locations
    - 🗣️ for speakers or participants
     - 📝 for event-related information
+       6. Keep it short and precise if possible(not too congested)
+       7. Generate in markdown format
    
 
         Respond in a straightforward manner, using simple language that anyone can understand.
