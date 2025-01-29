@@ -8,3 +8,6 @@ sentence-transformers
 faiss-cpu
 groq
 flask-cors
+eventlet 
+flask-socketio 
+flask-cors
