@@ -143,7 +143,8 @@ def answer_query(query, index_file, pdf_path, session_id):
                 "role": "user",
                 "content": prompt
             }],
-            model="llama-3.1-8b-instant"  # Use the model ID that you want to use in Groq
+            model="llama-3.1-8b-instant",  # Use the model ID that you want to use in Groq
+            temperature=0
         )
 
         # Increment the usage count for the API key
