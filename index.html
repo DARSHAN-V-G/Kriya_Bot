@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Chatbot</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -104,67 +106,38 @@
     </div>
 
     <script>
-        let sessionId = "session-" + new Date().getTime(); // Unique session ID for each user interaction
+        let socket = io('http://localhost:5000');
+        let sessionId = "session-" + new Date().getTime();
 
-        // Function to send message to backend
+        socket.on('response', function(data) {
+            document.getElementById('loading').style.display = 'none';
+
+            if (data.error) {
+                appendMessage('Error: ' + data.error, 'assistant');
+            } else {
+                appendMessage(data.response, 'assistant');
+            }
+        });
+
         function sendMessage() {
             let queryText = document.getElementById('query').value;
-            if (!queryText.trim()) {
-                return;
-            }
+            if (!queryText.trim()) return;
 
-            appendMessage(queryText, 'user'); // Show the user's message in the chat
+            appendMessage(queryText, 'user');
+            document.getElementById('query').value = '';
+            document.getElementById('loading').style.display = 'block';
 
-            document.getElementById('query').value = ''; // Clear the input field
-            document.getElementById('loading').style.display = 'block'; // Show loading indicator
-
-            // Send the query to the backend
-            fetch('https://xl0rbvsb-5000.inc1.devtunnels.ms/query', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: queryText,
-                    session_id: sessionId,
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('loading').style.display = 'none'; // Hide loading indicator
-
-                if (data.error) {
-                    appendMessage('Error: ' + data.error, 'assistant');
-                } else {
-                    // Display the response returned by the backend
-                    let responseMessage = data.response; // The response field from backend
-                    appendMessage(responseMessage, 'assistant');
-                }
-            })
-            .catch(error => {
-                document.getElementById('loading').style.display = 'none'; // Hide loading indicator
-                appendMessage('Error: ' + error.message, 'assistant');
-            });
+            socket.emit('query', { query: queryText, session_id: sessionId });
         }
 
-        // Function to append messages to the chat
         function appendMessage(message, sender) {
             let messageDiv = document.createElement('div');
             messageDiv.classList.add('message');
             messageDiv.classList.add(sender === 'user' ? 'user-message' : 'assistant-message');
-
-            // Render Markdown if the sender is the assistant
-            if (sender === 'assistant') {
-                messageDiv.classList.add('markdown-rendered');
-                messageDiv.innerHTML = renderMarkdown(message); // Convert Markdown to HTML
-            } else {
-                messageDiv.textContent = message; // Plain text for user messages
-            }
-
+            messageDiv.textContent = message;
             document.getElementById('messages').appendChild(messageDiv);
-            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight; // Scroll to the bottom
+            document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
         }
-
         // Function to render Markdown as HTML
         function renderMarkdown(markdown) {
             // Simple Markdown parsing (you can use a library like `marked.js` for full support)

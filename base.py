@@ -1,65 +1,65 @@
+import eventlet
+eventlet.monkey_patch()
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 import uuid
 from dotenv import load_dotenv
 from server import answer_query, store_data_in_faiss
 
 load_dotenv()
 
-# Initialize PDF and index file paths
-pdf_path = "events.pdf"
-index_file = "vector_db.pkl"
-
-# Initialize Flask app and CORS
+# Initialize Flask app, CORS, and SocketIO
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})  # Change "*" to your frontend domain for security
+CORS(app, resources={r"/*": {"origins": "*"}})
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Store user sessions in memory (chat history per session)
+# Store user sessions in memory
 chat_sessions = {}
 
-# Helper function to manage session
+# Generate a unique session ID
 def get_session_id():
-    return str(uuid.uuid4())  # Generates a unique session ID for each user
+    return str(uuid.uuid4())
 
-@app.route('/query', methods=['POST'])
-def query():
+@socketio.on('query')
+def handle_query(data):
     try:
-        query_text = request.json.get('query', None)
-        session_id = request.json.get('session_id', None)
+        query_text = data.get('query', None)
+        session_id = data.get('session_id', None)
 
         if not query_text:
-            return jsonify({"error": "No query provided"}), 400
+            emit('response', {"error": "No query provided"})
+            return
 
         if not session_id:
             session_id = get_session_id()
 
-        # Make sure each session has a chat history
         if session_id not in chat_sessions:
             chat_sessions[session_id] = []
 
-        # Add the current query to the session's chat history
         chat_sessions[session_id].append({'role': 'user', 'content': query_text})
 
-        # Pass the session's chat history to the answer_query function
-        results = answer_query(query_text, index_file, pdf_path, session_id)
+        # Process query and get results
+        results = answer_query(query_text, "vector_db.pkl", "events.pdf", session_id)
 
-        # Append the response to the session's chat history
+        # Store response in chat history
         chat_sessions[session_id].append({'role': 'assistant', 'content': results})
 
-        # Return the response as JSON
-        return jsonify({"response": results, "session_id": session_id}), 200
+        # Send response to client
+        emit('response', {"response": results, "session_id": session_id})
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        emit('response', {"error": str(e)})
 
-@app.route('/store', methods=['GET'])
-def store():
+@socketio.on('store')
+def handle_store():
     try:
-        # Store the text data in Faiss only if not already stored
-        store_data_in_faiss(pdf_path, index_file)
-        return jsonify({"message": "Text data successfully stored!"}), 200
+        store_data_in_faiss("events.pdf", "vector_db.pkl")
+        emit('store_response', {"message": "Text data successfully stored!"})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        emit('store_response', {"error": str(e)})
+
+
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')  # Ensure the app listens on all interfaces
+    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
