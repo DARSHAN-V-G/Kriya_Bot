@@ -2,6 +2,8 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain_docling import DoclingLoader
+from langchain_docling.loader import ExportType
 from groq import Groq
 import os
 import pickle
@@ -10,6 +12,9 @@ from datetime import datetime
 from dotenv import load_dotenv
 from threading import Lock
 import json
+import logging
+
+
 load_dotenv()
 
 # Load all Groq API keys from environment variables
@@ -24,6 +29,12 @@ last_reset_time = time.time()
 
 # Store chat sessions globally
 chat_sessions = {}
+
+# Set up logging
+logging.basicConfig(filename="activity_log.log", level=logging.INFO, format='%(asctime)s - %(message)s')
+
+def log_activity(message):
+    logging.info(message)
 
 def reset_api_key_usage():
     global last_reset_time
@@ -47,86 +58,25 @@ def increment_api_key_usage(api_key):
         if api_key in api_key_usage:
             api_key_usage[api_key] += 1
 
-def store_data_in_faiss(json_paths, index_file):
-    """
-    Reads multiple JSON files, extracts only relevant participant details, 
-    creates text embeddings, and stores them in FAISS.
-    
-    :param json_paths: List of JSON file paths (event_data, paper-data, workshop-data)
-    :param index_file: Path to store the FAISS index
-    """
-    filtered_data = []
-
-    for json_path in json_paths:
-        with open(json_path, 'r', encoding='utf-8') as f:
-            events = json.load(f)
-
-        for event in events:
-            # Process event_data.json
-            if "eventName" in event:
-                relevant_text = f"""
-                Event Name: {event.get('eventName', '')}
-                Category: {event.get('category', '')}
-                One-Line Description: {event.get('one_line_desc', '')}
-                Description: {event.get('description', '')}
-                Round 1: {event.get('round_title_1', '')} - {event.get('round_desc_1', '')}
-                Round 2: {event.get('round_title_2', '')} - {event.get('round_desc_2', '')}
-                Rules: {event.get('eventRules', '')}
-                Team Size: {event.get('teamSize', '')}
-                Date: {event.get('date', '')}
-                Timing: {event.get('timing', '')}
-                Venue: {event.get('hall', '')}
-                Contact 1: {event.get('contact_name_1', '')} ({event.get('contact_mobile_1', '')})
-                Contact 2: {event.get('contact_name_2', '')} ({event.get('contact_mobile_2', '')})
-                """
-                filtered_data.append(relevant_text)
-
-            # Process paper-data.json
-            elif "ppid" in event:
-                relevant_text = f"""
-                Event Name: {event.get('eventName', '')}
-                Theme: {event.get('theme', '')}
-                Topics: {event.get('topic', '')}
-                Rules: {event.get('rules', '')}
-                Team Size: {event.get('teamSize', '')}
-                Date: {event.get('date', '')}
-                Timing: {event.get('time', '')}
-                Venue: {event.get('hall', '')}
-                Deadline: {event.get('deadline', '')}
-                Contact 1: {event.get('contact1', [None, None])[0]} ({event.get('contact1', [None, None])[1]})
-                Contact 2: {event.get('contact2', [None, None])[0]} ({event.get('contact2', [None, None])[1]})
-                """
-                filtered_data.append(relevant_text)
-
-            # Process workshop-data.json
-            elif "wid" in event:
-                relevant_text = f"""
-                Workshop Name: {event.get('workName', '')}
-                Organized by: {event.get('assnName', '')}
-                Description: {event.get('desc', '')}
-                Fee: ₹{event.get('alteredFee', '')}
-                Max Participants: {event.get('maxCount', '')}
-                Date: {event.get('date', '')}
-                Timing: {event.get('time', '')}
-                Venue: {event.get('hall', '')}
-                Contact 1: {event.get('c1Name', '')} ({event.get('c1Num', '')})
-                Contact 2: {event.get('c2Name', '')} ({event.get('c2Num', '')})
-                Agenda: {', '.join([item['description'][0] for session in event.get('agenda', []) for item in session if 'description' in item])}
-                """
-                filtered_data.append(relevant_text)
-
-    # Convert text data to embeddings
-    embeddings = HuggingFaceEmbeddings()
-    db = FAISS.from_texts(filtered_data, embeddings)
-
-    # Save the FAISS index
+def store_data_in_faiss(pdf_path, index_file):
+    # Load and split the PDF document
+    loader = DoclingLoader(
+    file_path="Kriya events data.pdf",  # Path to your file
+    export_type=ExportType.DOC_CHUNKS,             # Format of the input file# Pass the tokenizer
+    )
+    docs = loader.load()
+    # Create embeddings and store them in FAISS
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    db = FAISS.from_documents(docs, embeddings)
     with open(index_file, 'wb') as f:
         pickle.dump(db, f)
-
     return db
 
-def answer_query(query, index_file, json_path, session_id):
+def answer_query(query, index_file, pdf_path, session_id):
     try:
+        # Log query
+        log_activity(f"Query received from session {session_id}: {query}")
+        
         # Load the FAISS index from the pickle file
         try:
             with open(index_file, 'rb') as f:
@@ -134,19 +84,19 @@ def answer_query(query, index_file, json_path, session_id):
                 print("FAISS vector store loaded from .pkl file.")
         except Exception as e:
             print(f"Error loading FAISS index: {e}")
-            db = store_data_in_faiss(json_path, index_file)
+            db = store_data_in_faiss(pdf_path, index_file)
             print("FAISS vector store created and stored.")
 
         # Perform a similarity search
         result = db.similarity_search(query)
-        context = "\n".join([r.page_content for r in result[:3]])
+        context = "\n".join([r.page_content for r in result[:5]])
+        print(result)
 
         # Prepare the prompt for Groq Cloud API with session history
         if session_id not in chat_sessions:
             chat_sessions[session_id] = []
-        conversation_history=""
-        # Add the current question to the conversation history
-        chat_sessions[session_id].append({"role": "user", "content": query})
+        conversation_history = "\n".join([f"{message['role']}: {message['content']}" for message in chat_sessions[session_id]])
+
         # Combine all previous interactions into the prompt
         prompt = f"""
         You are an AI assistant for the intercollege event Kriya 2025, in PSG college of technology(don't speak bad about it). You are specialized in providing precise information about events. Follow these guidelines strictly:
@@ -174,9 +124,8 @@ def answer_query(query, index_file, json_path, session_id):
         Current system date and time: {current_date_time}
         """
         print(prompt)
-        # Get an available API key
-        conversation_history = "\n".join([f"{message['role']}: {message['content']}" for message in chat_sessions[session_id][-5:]])
         
+        # Get an available API key
         api_key = get_available_api_key()
         if not api_key:
             return "All API keys have reached their request limit. Please wait a moment and try again."
@@ -201,7 +150,12 @@ def answer_query(query, index_file, json_path, session_id):
         assistant_response = chat_completion.choices[0].message.content
         chat_sessions[session_id].append({"role": "assistant", "content": assistant_response})
 
+        # Log assistant response
+        log_activity(f"Assistant response for session {session_id}: {assistant_response}")
+        log_activity(f"Conversation History for session {session_id}: {conversation_history}")
+
         # Return the response
         return assistant_response
     except Exception as e:
+        log_activity(f"Error occurred in session {session_id}: {str(e)}")
         return f"An error occurred: {str(e)}"

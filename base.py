@@ -11,12 +11,12 @@ load_dotenv()
 
 # Initialize Flask app, CORS, and SocketIO
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/": {"origins": ""}})
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Store user sessions in memory
 chat_sessions = {}
-json_files = ["event-data.json", "paper-data.json", "workshop-data.json"]
+
 # Generate a unique session ID
 def get_session_id():
     return str(uuid.uuid4())
@@ -40,7 +40,7 @@ def handle_query(data):
         chat_sessions[session_id].append({'role': 'user', 'content': query_text})
 
         # Process query and get results
-        results = answer_query(query_text, "vector_db.pkl", json_files, session_id)
+        results = answer_query(query_text, "vector_db.pkl", "Kriya events data.pdf", session_id)
 
         # Store response in chat history
         chat_sessions[session_id].append({'role': 'assistant', 'content': results})
@@ -55,7 +55,7 @@ def handle_query(data):
 def handle_store():
     try:
         
-        store_data_in_faiss(json_files, "vector_db.pkl")
+        store_data_in_faiss("Kriya_events.pdf", "vector_db.pkl")
         emit('store_response', {"message": "Text data successfully stored!"})
     except Exception as e:
         emit('store_response', {"error": str(e)})

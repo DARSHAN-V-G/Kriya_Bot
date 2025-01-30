@@ -11,3 +11,5 @@ flask-cors
 eventlet 
 flask-socketio 
 flask-cors
+langchain-docling
+langchain-docling-loader
