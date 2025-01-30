@@ -40,7 +40,7 @@ def handle_query(data):
         chat_sessions[session_id].append({'role': 'user', 'content': query_text})
 
         # Process query and get results
-        results = answer_query(query_text, "vector_db.pkl", "Kriya events data.pdf", session_id)
+        results = answer_query(query_text, "vector_db.pkl", "Kriya_events.pdf", session_id)
 
         # Store response in chat history
         chat_sessions[session_id].append({'role': 'assistant', 'content': results})
