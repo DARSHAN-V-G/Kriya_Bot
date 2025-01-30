@@ -1,0 +1,96 @@
+[{
+  "_id": {
+    "$oid": "6798de493cf937ec4c766b8a"
+  },
+  "ppid": "PRPN01",
+  "image": "https://res.cloudinary.com/dvxgjje9e/image/upload/f_auto,q_auto/prezenta",
+  "eventName": "ADVANCE METHOD OF REFRIGERATION AND AIR CONDITIONING",
+  "contact1": [
+    "Maria Mathews S",
+    {
+      "$numberLong": "8056374741"
+    }
+  ],
+  "contact2": [
+    "AB. Ramkishore",
+    {
+      "$numberLong": "7845403319"
+    }
+  ],
+  "eventMail": [
+    "studentschapterishrea@gmail.com"
+  ],
+  "theme": "Advance of Refrigeration and Airconditioning.",
+  "topic": "1.Smart Building Systems and Automation (related to HVAC systems)\n2.Cooling Technologies \n3.Heating and Cooling for Districts (Energy Efficiency and Heat Recovery)\n4.Cold Storage and Refrigerated Transportation Systems\n5.Indoor Air Quality and Industrial Ventilation\n6.Applications for Low-Temperature Cooling\n7.New Technologies and Materials in HVAC Systems\n8.Natural and Eco-Friendly Refrigerants\n9.Poly-generation in HVAC (Producing Electricity, Heat, and Cooling Together)\n10.Advances in Refrigerated Cold Chains and Storage\n11.Sorption Systems for Heating and Cooling\n12.Thermodynamic Systems for Refrigeration and Cooling\n13.Thermal Energy Storage in Refrigeration Systems.\n",
+  "rules": "1)Team 2-4 members\n2)10 to 15 mins for team\n3) End for the presentation questions will be ask by Judge\nNOTE:\nOwn idea...\nDon't copy internet and AI contents for presentation.",
+  "date": "14",
+  "time": "9:30 AM - 4.30 PM",
+  "deadline": "01",
+  "teamSize": "2-4",
+  "hall": "Y BLOCK 2ND FLOOR (Y201)",
+  "closed": false
+},
+{
+  "_id": {
+    "$oid": "6798de493cf937ec4c766b8b"
+  },
+  "ppid": "PRPN03",
+  "image": "https://res.cloudinary.com/dvxgjje9e/image/upload/f_auto,q_auto/textrivia",
+  "eventName": "Technoration",
+  "contact1": [
+    "Neha Babu Rajkumar",
+    {
+      "$numberLong": "7418993936"
+    }
+  ],
+  "contact2": [
+    "Visnu Tharsan T",
+    {
+      "$numberLong": "9790600975"
+    }
+  ],
+  "eventMail": [
+    "igbc.psgtech2024@gmail.com"
+  ],
+  "theme": "Initiating substantive dialogues, our discussions meticulously navigate regulatory challenges, economic feasibility, and global ramifications. The overarching objective is to a paradigm shift towards environmentally conscious construction practices, envisioning a future wherein structures harmoniously coalesce with nature.",
+  "topic": "We welcome a broad range of topics:\r\n\r\nArtificial Intelligence and Machine Learning in ECE\r\n\r\nGreen and Sustainable Electronics\r\n\r\nAutonomous Vehicle Technologies\r\n\r\nNext-Generation Networking (5G/6G)\r\n\r\nQuantum Computing\r\n\r\nLow Power VLSI\r\n\r\nDigital Twins in Electronics and Communication\r\n\r\nElectromagnetic Interference and Compatibility\r\n\r\nEmbedded Systems & IoT\r\n\r\nThe Topics/Domains listed above are carefully chosen from highly reputed sources such as the Gartner’s Hype Cycle 2023, IEEE and similar sources, that shed light on the latest industry trends. This event provides students a platform to present and discuss on their innovative work, while also motivating them to learn and research on the newest industry trends.\r\n",
+  "rules": "Minimum 1 and maximum 3 members in a team.\r\nEach participant or team is limited to submitting only one abstract.\r\nSubmit your abstracts within 18 days from the start date of registration for this event. For submission, abstracts shall be e-mailed to: assn.ece@psgtech.ac.in\r\n",
+  "date": "15",
+  "time": "9:30 AM - 12.30 PM",
+  "deadline": "15",
+  "teamSize": "1-3",
+  "hall": "J-313 and J-314 (or) J-414 and J-415",
+  "closed": false
+},
+{
+  "_id": {
+    "$oid": "6798de493cf937ec4c766b8c"
+  },
+  "ppid": "PRPN04",
+  "image": "https://res.cloudinary.com/dvxgjje9e/image/upload/f_auto,q_auto/technoration",
+  "eventName": "அறிந்தமிழ் கூடல்",
+  "contact1": [
+    "M DINESH",
+    {
+      "$numberLong": "8148462975"
+    }
+  ],
+  "contact2": [
+    "ANIRUTHAN B",
+    {
+      "$numberLong": "9360778591"
+    }
+  ],
+  "eventMail": [
+    "kanithamilperavai@gmail.com"
+  ],
+  "theme": "With a commitment to advancing clarity, originality, and critical analysis, our primary objective is to champion novelty and innovation within a broad range of technical fields. The subsequent discussion will encompass the following topics",
+  "topic": "1.செயற்கை நுண்ணறிவு (Artificial intelligence)\r\n2.பொருட்களின் இணையம் (IOT)\r\n3.இயந்திர‌ கற்றல் ( Machine learning)\r\n4.குவாண்டம் கணிணி (Quantum Computing)\r\n5.தானியங்கி டிரோன் ( Autonomous drones)\r\n6.முப்பரிமான அச்சாக்கம் (3D Printing)\r\n7.மெய் நிகர்( Virtual Reality)\r\n8.உட்பொதிக்கப்பட்ட அமைப்பு (Embedded Systems)\r\n9.மின்சார வாகனங்கள் (Electric Vehicles)",
+  "rules": "கீழே கொடுக்கப்பட்டுள்ளபடி அனைத்து சுருக்கங்களும் மின்னணு முறையில் மட்டுமே சமர்ப்பிக்கப்பட வேண்டும்.\r\nஆய்வு கட்டுரைக்ககான அமைப்பு:\r\n● தலைப்பு.\r\n• சமர்ப்பிக்கும் பங்கேற்பாளர்.\r\n• இணை பங்கேற்பாளர் (\r\nகள்)\r\n• கல்வி நிறுவனம்\r\n• பங்கேற்பாளர்களின் துறை\r\n• அறிமுகம்\r\n• முடிவுகள்\r\n• கலந்துரையாடல்\r\n• முடிவுரை.\r\n\r\n●அனைத்து சுருக்க உரைகளும் (ABSTRACT) இரண்டு பக்கங்களில் PDF வடிவத்தில் மட்டுமே சமர்ப்பிக்கப்பட வேண்டும்.(அதிகபட்சம் இரண்டு பக்கங்கள்)\r\n●ஹைப்பர்லிங்க்கள், அனிமேஷன் படங்கள் அல்லது வீடியோக்கள் அனுமதிக்கப்படமாட்டாது.\r\n●பங்கேற்பாளர், கொடுக்கப்பட்ட தலைப்பில் இருந்து மட்டுமே தலைப்பைத் தேர்ந்தெடுத்து கட்டுரையை சமர்ப்பிக்க வேண்டும்.\r\n●சுருக்க உரையை (ABSTRACT) ஆசிரியர் குழுவால் ஆராயப்படும். ஆசிரியர் குழுவின் உடைய பரிந்துரையே இறுதியானது.\r\n●தேர்ந்தெடுக்கப்படும் சுருக்க உரைகளே அடுத்த சுற்றுக்கு அனுமதிக்கப்படும்.\r\n",
+  "date": "15",
+  "time": "9:30 AM - 12.30 PM",
+  "deadline": "15",
+  "teamSize": "1 - 3",
+  "hall": "G - 306",
+  "closed": false
+}]
