@@ -3,6 +3,7 @@ import pickle
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 import google.generativeai as genai
 from dotenv import load_dotenv
@@ -15,7 +16,7 @@ def store_data_in_faiss(pdf_path, index_file):
     loader = PyPDFLoader(pdf_path)
     docs = loader.load()
     
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=20)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=50, chunk_overlap=10)
     documents = text_splitter.split_documents(docs)
     
     # Create embeddings and store them in FAISS

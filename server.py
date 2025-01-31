@@ -1,6 +1,7 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_docling import DoclingLoader
 from langchain_docling.loader import ExportType
@@ -60,14 +61,15 @@ def increment_api_key_usage(api_key):
 
 def store_data_in_faiss(pdf_path, index_file):
     # Load and split the PDF document
-    loader = DoclingLoader(
-    file_path=pdf_path,  # Path to your file
-    export_type=ExportType.DOC_CHUNKS,             # Format of the input file# Pass the tokenizer
-    )
+    loader = PyPDFLoader(pdf_path)
     docs = loader.load()
+    
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
+    documents = text_splitter.split_documents(docs)
+    
     # Create embeddings and store them in FAISS
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    db = FAISS.from_documents(docs, embeddings)
+    embeddings = HuggingFaceEmbeddings()
+    db = FAISS.from_documents(documents, embeddings)
     with open(index_file, 'wb') as f:
         pickle.dump(db, f)
     return db
@@ -88,7 +90,7 @@ def answer_query(query, index_file, pdf_path, session_id):
             print("FAISS vector store created and stored.")
 
         # Perform a similarity search
-        result = db.similarity_search(query)
+        result = db.similarity_search(query,k=5)
         context = "\n".join([r.page_content for r in result[:5]])
         print(result)
 
