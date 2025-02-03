@@ -40,7 +40,7 @@ def handle_query(data):
         chat_sessions[session_id].append({'role': 'user', 'content': query_text})
 
         # Process query and get results
-        results = answer_query(query_text, "vector_db.pkl", "Kriya_events.pdf", session_id)
+        results = answer_query(query_text, "vector_db.pkl", "kriya_events.pdf", session_id)
 
         # Store response in chat history
         chat_sessions[session_id].append({'role': 'assistant', 'content': results})
@@ -55,7 +55,7 @@ def handle_query(data):
 def handle_store():
     try:
         
-        store_data_in_faiss("Kriya_events.pdf", "vector_db.pkl")
+        store_data_in_faiss("kriya_events.pdf", "vector_db.pkl")
         emit('store_response', {"message": "Text data successfully stored!"})
     except Exception as e:
         emit('store_response', {"error": str(e)})

@@ -7,6 +7,7 @@ from langchain_docling import DoclingLoader
 from langchain_docling.loader import ExportType
 from groq import Groq
 import os
+from langchain.schema import Document
 import pickle
 import time
 from datetime import datetime
@@ -60,19 +61,22 @@ def increment_api_key_usage(api_key):
             api_key_usage[api_key] += 1
 
 def store_data_in_faiss(pdf_path, index_file):
-    # Load and split the PDF document
+    # Load the PDF document
     loader = PyPDFLoader(pdf_path)
     docs = loader.load()
     
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
-    documents = text_splitter.split_documents(docs)
+    # Treat each page as a separate chunk
+    documents = [Document(page_content=page.page_content, metadata={"page": page.metadata["page"]}) for page in docs]
     
     # Create embeddings and store them in FAISS
     embeddings = HuggingFaceEmbeddings()
     db = FAISS.from_documents(documents, embeddings)
+    
     with open(index_file, 'wb') as f:
         pickle.dump(db, f)
+    
     return db
+
 
 def answer_query(query, index_file, pdf_path, session_id):
     try:
