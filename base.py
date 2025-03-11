@@ -1,3 +1,6 @@
+import multiprocessing
+multiprocessing.set_start_method("spawn", force=True)
+
 import eventlet
 eventlet.monkey_patch()
 from flask import Flask, request, jsonify

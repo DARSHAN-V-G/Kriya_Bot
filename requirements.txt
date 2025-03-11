@@ -3,7 +3,7 @@ python-dotenv
 langchain-community
 google-generativeai
 pypdf
-
+ollama
 sentence-transformers
 faiss-cpu
 groq
