@@ -60,7 +60,17 @@ def handle_store():
     except Exception as e:
         emit('store_response', {"error": str(e)})
 
-
+@app.route('/logs', methods=['GET'])
+def get_logs():
+    try:
+        with open("activity_log.log", "r") as log_file:
+            logs = log_file.readlines()
+        response = jsonify({"logs": logs[::-1]})  # Send logs in descending order
+        response.headers['Access-Control-Allow-Origin'] = '*'  # Ensure CORS headers
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host='0.0.0.0', port=5000)

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Logs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', sans-serif;
+        }
+        .log-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        }
+        .log-entry {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #eceff1;
+            transition: background-color 0.2s ease;
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+        .log-entry:hover {
+            background-color: #f8f9fa;
+        }
+        .log-date {
+            color: #3f51b5;
+            font-weight: 600;
+            min-width: 120px;
+            font-size: 0.9rem;
+        }
+        .log-time {
+            color: #4caf50;
+            font-weight: 500;
+            min-width: 100px;
+            font-size: 0.9rem;
+        }
+        .log-message {
+            color: #37474f;
+            flex-grow: 1;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .log-error {
+            color: #d32f2f;
+            background-color: #ffebee;
+            border-left: 3px solid #d32f2f;
+        }
+        .header-section {
+            border-bottom: 1px solid #eceff1;
+            padding: 1.5rem;
+        }
+        .dropdown {
+            max-width: 200px;
+        }
+        @media (max-width: 768px) {
+            .log-entry {
+                flex-direction: column;
+                gap: 0.5rem;
+                padding: 1rem;
+            }
+            .log-date, .log-time {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+    <div class="log-container">
+        <div class="header-section">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+                <h2 class="h4 mb-3 mb-md-0 fw-bold">Activity Logs</h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary d-flex align-items-center" onclick="fetchLogs()">
+                        <span class="d-none d-sm-inline">Refresh</span>
+                    </button>
+                    <select id="dateFilter" class="form-select" onchange="filterLogs()">
+                        <option value="">All Dates</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div id="log-content" class="py-2"></div>
+    </div>
+</div>
+
+<script>
+    let allLogs = [];
+
+    function fetchLogs() {
+        fetch("http://localhost:5000/logs")
+            .then(response => response.json())
+            .then(data => {
+                if (data.logs) {
+                    allLogs = data.logs.reverse();
+                    populateDateDropdown();
+                    displayLogs();
+                }
+            })
+            .catch(console.error);
+    }
+
+    function populateDateDropdown() {
+        const dates = [...new Set(allLogs.map(log => {
+            const match = log.match(/^(\d{4}-\d{2}-\d{2})/);
+            return match ? match[1] : null;
+        }).filter(Boolean))].reverse();
+
+        const dropdown = document.getElementById("dateFilter");
+        dropdown.innerHTML = '<option value="">All Dates</option>';
+        dates.forEach(date => {
+            const option = new Option(date, date);
+            dropdown.add(option);
+        });
+    }
+
+    function displayLogs(filterDate = "") {
+        const container = document.getElementById("log-content");
+        container.innerHTML = "";
+
+        const filteredLogs = filterDate 
+            ? allLogs.filter(log => log.startsWith(filterDate))
+            : allLogs;
+
+        if (filteredLogs.length === 0) {
+            container.innerHTML = `<div class="text-center py-4 text-muted">No logs found</div>`;
+            return;
+        }
+
+        filteredLogs.forEach(log => {
+            const entry = document.createElement("div");
+            entry.className = "log-entry";
+
+            const match = log.match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2},\d{3}) - (.*)/s);
+            if (match) {
+                entry.innerHTML = `
+                    <div class="log-date">${match[1]}</div>
+                    <div class="log-time">${match[2]}</div>
+                    <div class="log-message">${match[3]}</div>
+                `;
+            } else {
+                entry.className += " log-error";
+                entry.innerHTML = `<div class="log-message">${log}</div>`;
+            }
+
+            container.appendChild(entry);
+        });
+    }
+
+    function filterLogs() {
+        const selectedDate = document.getElementById("dateFilter").value;
+        displayLogs(selectedDate);
+    }
+
+    fetchLogs();
+</script>
+
+</body>
+</html>
